@@ -1,62 +1,119 @@
-return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-gray-950">
-        
-        {/* 1. Background Collage (Always there) */}
-        <div className="absolute inset-0 z-0">
-            {photos.map((photo, i) => (
-                <motion.div
-                    key={i}
-                    animate={{ opacity: 0.5, y: [0, 15, 0] }}
-                    transition={{ duration: 4, repeat: Infinity, delay: i * 0.1 }}
-                    className="absolute collage-photo"
-                    style={{
-                        backgroundImage: `url('${photo}')`,
-                        left: `${(i % 5) * 20}%`,
-                        top: `${Math.floor(i / 5) * 22}%`,
-                    }}
-                />
-            ))}
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>For Belle ❤️</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+</head>
+<body class="bg-black m-0 overflow-hidden font-sans">
+    <div id="root"></div>
 
-        <audio ref={audioRef} loop><source src="Alwaysbemybaby.mp3" type="audio/mpeg" /></audio>
-        <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] z-1" />
+    <script type="text/babel">
+        const { useState, useRef, useEffect } = React;
+        const { motion, AnimatePresence } = window.Motion;
 
-        {/* 2. THE LOGIC GATE: Show Box OR Show Text */}
-        <AnimatePresence mode="wait">
-            {!answered ? (
-                /* --- THE WHITE BOX (Only shows if NOT answered) --- */
-                <motion.div 
-                    key="question"
-                    initial={{ opacity: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    className="relative z-20 w-full max-w-xl bg-white/70 backdrop-blur-lg p-10 rounded-3xl shadow-2xl text-center border border-white/40"
-                >
-                    <h1 className="text-4xl font-extrabold text-red-600">Belle ❤️</h1>
-                    <p className="mt-4 text-gray-800 italic font-semibold">"Always be my baby..."</p>
-                    <h2 className="text-2xl mt-6 font-bold text-black">Will You Be My Valentine?</h2>
-                    <div className="flex justify-center items-center gap-8 mt-10">
-                        <button style={{ scale: yesScale }} onClick={handleYesClick} className="bg-red-600 text-white px-10 py-4 rounded-full font-bold">Yes! 🌹</button>
-                        <motion.button animate={{ x: noPosition.x, y: noPosition.y }} onMouseEnter={moveNoButton} className="border-2 border-gray-600 px-8 py-3 rounded-full text-black">No</motion.button>
+        function App() {
+            const [stage, setStage] = useState('start'); // 'start', 'ask', 'yes'
+            const [noPos, setNoPos] = useState({ x: 0, y: 0 });
+            const [yesScale, setYesScale] = useState(1);
+            const audioRef = useRef(null);
+
+            const photos = ['1.jpeg','2.jpeg','3.jpeg','4.jpeg','5.jpeg','6.jpeg','7.jpeg','8.jpeg','9.jpeg','10.jpeg','11.jpeg','12.jpeg','13.jpeg','14.jpeg','15.jpeg','16.jpeg','belle.jpg.jpeg'];
+
+            const handleStart = () => {
+                audioRef.current.play().catch(() => {});
+                setStage('ask');
+            };
+
+            const moveNo = () => {
+                setNoPos({ x: Math.random() * 200 - 100, y: Math.random() * 200 - 100 });
+                setYesScale(s => s + 0.3);
+            };
+
+            return (
+                <div class="relative w-screen h-screen flex items-center justify-center overflow-hidden">
+                    {/* Background: Ken Burns Slideshow */}
+                    <div className="absolute inset-0 z-0">
+                        <AnimatePresence>
+                            <motion.div 
+                                key={Math.floor(Date.now()/3000)} // Changes every 3 seconds
+                                initial={{ opacity: 0, scale: 1.2 }}
+                                animate={{ opacity: 0.4, scale: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 2 }}
+                                className="absolute inset-0 bg-cover bg-center"
+                                style={{ backgroundImage: `url(${photos[Math.floor((Date.now()/3000) % photos.length)]})` }}
+                            />
+                        </AnimatePresence>
                     </div>
-                </motion.div>
-            ) : (
-                /* --- THE FINAL MESSAGE (Only shows if answered) --- */
-                <motion.div 
-                    key="celebration"
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="relative z-40 text-center"
-                >
-                    <h2 className="text-7xl md:text-9xl font-black text-white drop-shadow-[0_0_30px_rgba(220,38,38,1)]">YES! ❤️</h2>
-                    <p className="text-2xl md:text-4xl text-white mt-6 font-bold italic">"I'm part of you indefinitely..."</p>
-                    {/* Falling Hearts */}
-                    <div className="fixed inset-0 pointer-events-none">
-                        {[...Array(30)].map((_, i) => (
-                            <motion.span key={i} animate={{ y: '110vh' }} transition={{ repeat: Infinity, duration: 3, delay: i * 0.1 }} className="absolute text-red-500 text-3xl" style={{ left: `${Math.random() * 100}vw` }}>❤️</motion.span>
-                        ))}
-                    </div>
-                </motion.div>
-            )}
-        </AnimatePresence>
-    </div>
-);
+
+                    <audio ref={audioRef} loop src="Alwaysbemybaby.mp3" />
+
+                    <AnimatePresence mode="wait">
+                        {stage === 'start' && (
+                            <motion.button 
+                                key="start"
+                                exit={{ opacity: 0, scale: 2 }}
+                                onClick={handleStart}
+                                className="z-50 text-7xl filter drop-shadow-lg"
+                            >
+                                ❤️
+                            </motion.button>
+                        )}
+
+                        {stage === 'ask' && (
+                            <motion.div 
+                                key="ask"
+                                initial={{ opacity: 0, y: 50 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, filter: "blur(20px)" }}
+                                className="z-20 p-10 m-4 bg-white/20 backdrop-blur-xl rounded-3xl border border-white/30 text-center shadow-2xl max-w-sm"
+                            >
+                                <h1 className="text-4xl font-bold text-white mb-2">Belle</h1>
+                                <p className="text-white/80 italic mb-6">"Always be my baby..."</p>
+                                <h2 className="text-2xl font-bold text-white mb-8">Will You Be My Valentine?</h2>
+                                <div className="flex flex-col gap-4 items-center">
+                                    <motion.button 
+                                        style={{ scale: yesScale }}
+                                        onClick={() => setStage('yes')}
+                                        className="bg-red-600 text-white px-10 py-3 rounded-full font-bold shadow-lg"
+                                    >
+                                        Yes! 🌹
+                                    </motion.button>
+                                    <motion.button 
+                                        animate={{ x: noPos.x, y: noPos.y }}
+                                        onMouseEnter={moveNo} onTouchStart={moveNo}
+                                        className="text-white/50 text-sm"
+                                    >
+                                        No
+                                    </motion.button>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {stage === 'yes' && (
+                            <motion.div 
+                                key="yes"
+                                initial={{ opacity: 0, scale: 0.5 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="z-30 text-center"
+                            >
+                                <h2 className="text-7xl md:text-9xl font-black text-white drop-shadow-2xl">YES! ❤️</h2>
+                                <p className="text-white text-xl mt-4 font-bold italic">Indefinitely...</p>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
