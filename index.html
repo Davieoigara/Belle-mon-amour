@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Belle ❤️</title>
+    <title>For Belle ❤️</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -19,27 +19,35 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useRef, useEffect } = React;
+        const { useState, useRef } = React;
         const { motion, AnimatePresence } = window.Motion;
 
         function App() {
-            const [view, setView] = useState('landing'); // landing, journey, final
-            const [clicks, setClicks] = useState(0);
+            const [view, setView] = useState('landing'); // landing, journey, ask, finale
             const [activePhoto, setActivePhoto] = useState(null);
+            const [clickedCount, setClickedCount] = useState(0);
             const audioRef = useRef(null);
 
-            const photos = ['1.jpeg','2.jpeg','3.jpeg','4.jpeg','5.jpeg','6.jpeg','7.jpeg','8.jpeg','9.jpeg','10.jpeg','11.jpeg','12.jpeg','13.jpeg','14.jpeg','15.jpeg','16.jpeg'];
+            // Using your repository filenames
+            const photos = [
+                '1.jpeg','2.jpeg','3.jpeg','4.jpeg','5.jpeg',
+                '6.jpeg','7.jpeg','8.jpeg','9.jpeg','10.jpeg',
+                '11.jpeg','12.jpeg','13.jpeg','14.jpeg','15.jpeg',
+                '16.jpeg','belle.jpg.jpeg'
+            ];
 
             const startExperience = () => {
-                audioRef.current.play().catch(e => console.log(e));
+                audioRef.current.play().catch(() => {});
                 setView('journey');
             };
 
             const handlePetalClick = (index) => {
-                setActivePhoto(photos[index % photos.length]);
-                setClicks(prev => prev + 1);
-                if (clicks >= 15) {
-                    setTimeout(() => setView('final'), 2000);
+                setActivePhoto(photos[index]);
+                const nextCount = clickedCount + 1;
+                setClickedCount(nextCount);
+                // After 10 petals, move to the question
+                if (nextCount >= 10) {
+                    setTimeout(() => setView('ask'), 1500);
                 }
             };
 
@@ -48,90 +56,119 @@
                     <audio ref={audioRef} loop src="Alwaysbemybaby.mp3" />
 
                     <AnimatePresence mode="wait">
+                        {/* ACT 1: THE LANDING */}
                         {view === 'landing' && (
                             <motion.div 
-                                key="landing"
-                                exit={{ opacity: 0, y: -20 }}
-                                onClick={startExperience}
-                                className="text-center cursor-pointer p-10"
+                                key="landing" 
+                                exit={{ opacity: 0 }} 
+                                onClick={startExperience} 
+                                className="text-center cursor-pointer p-10 z-50"
                             >
                                 <motion.h1 
-                                    animate={{ opacity: [0.4, 1, 0.4] }}
-                                    transition={{ duration: 3, repeat: Infinity }}
+                                    animate={{ opacity: [0.4, 1, 0.4] }} 
+                                    transition={{ duration: 3, repeat: Infinity }} 
                                     className="text-xl tracking-[0.3em] uppercase font-light"
                                 >
                                     For Belle
                                 </motion.h1>
-                                <p class="mt-4 text-xs opacity-40 uppercase tracking-widest italic">Touch to enter</p>
+                                <p className="mt-4 text-[10px] opacity-40 uppercase tracking-widest italic">Touch to enter</p>
                             </motion.div>
                         )}
 
+                        {/* ACT 2: THE JOURNEY */}
                         {view === 'journey' && (
                             <motion.div key="journey" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute inset-0">
-                                {/* The "Bloomed" Photo */}
                                 <AnimatePresence>
                                     {activePhoto && (
                                         <motion.div 
-                                            key={activePhoto}
-                                            initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
-                                            animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                                            exit={{ opacity: 0, scale: 1.1 }}
-                                            className="absolute inset-0 flex items-center justify-center z-0"
+                                            key={activePhoto} 
+                                            initial={{ opacity: 0, scale: 0.9, rotate: -2 }} 
+                                            animate={{ opacity: 1, scale: 1, rotate: 0 }} 
+                                            exit={{ opacity: 0, scale: 1.1 }} 
+                                            className="absolute inset-0 flex items-center justify-center z-10"
                                         >
-                                            <div className="w-[80%] max-w-[400px] aspect-[4/5] bg-cover bg-center rounded-sm shadow-[0_0_50px_rgba(0,0,0,0.8)] border-[12px] border-white"
+                                            <div className="w-[75%] max-w-[350px] aspect-[4/5] bg-cover bg-center rounded-sm border-[10px] border-white shadow-2xl"
                                                  style={{ backgroundImage: `url(${activePhoto})` }} />
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
-
-                                {/* Interactive Petals */}
-                                {[...Array(16)].map((_, i) => (
-                                    <motion.button
+                                {[...Array(15)].map((_, i) => (
+                                    <motion.button 
                                         key={i}
                                         initial={{ x: Math.random()*100+'vw', y: Math.random()*100+'vh' }}
-                                        animate={{ 
-                                            y: [null, Math.random()*100+'vh'],
-                                            x: [null, Math.random()*100+'vw']
-                                        }}
-                                        transition={{ duration: 20 + Math.random()*10, repeat: Infinity, ease: "linear" }}
-                                        onClick={() => handlePetalClick(i)}
-                                        className="absolute z-10 text-red-900/40 text-2xl hover:text-red-500 transition-colors"
+                                        animate={{ y: [null, Math.random()*100+'vh'], x: [null, Math.random()*100+'vw'] }}
+                                        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                                        onClick={() => handlePetalClick(i % photos.length)}
+                                        className="absolute text-red-500/40 text-2xl z-20"
                                     >
                                         ❤
                                     </motion.button>
                                 ))}
-                                
-                                <div className="absolute bottom-10 w-full text-center text-[10px] tracking-widest opacity-30 uppercase">
-                                    Capture the hearts to find the message
-                                </div>
                             </motion.div>
                         )}
 
-                        {view === 'final' && (
-                            <motion.div 
-                                key="final"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="absolute inset-0 bg-[#300] flex flex-col items-center justify-center p-10 text-center"
-                            >
-                                <motion.div 
-                                    initial={{ y: 20 }}
-                                    animate={{ y: 0 }}
-                                    className="max-w-md"
+                        {/* ACT 3: THE PROPOSAL */}
+                        {view === 'ask' && (
+                            <motion.div key="ask" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center p-10 z-30">
+                                <h2 className="handwritten text-5xl md:text-6xl mb-6 text-pink-200">Belle,</h2>
+                                <p className="text-lg italic opacity-80 mb-10 tracking-wide">Will you be my Valentine?</p>
+                                <button 
+                                    onClick={() => setView('finale')} 
+                                    className="px-12 py-3 border border-pink-200 text-pink-200 rounded-full hover:bg-pink-200 hover:text-red-950 transition-all font-bold uppercase tracking-widest text-sm"
                                 >
-                                    <h2 className="handwritten text-5xl md:text-7xl mb-8 text-pink-200">Dearest Belle,</h2>
-                                    <p className="text-lg leading-relaxed font-light opacity-90 mb-12 italic">
-                                        Every memory we've made is a petal in the garden of my life. 
-                                        I've spent a long time thinking of the perfect way to ask...
-                                    </p>
-                                    <motion.button 
-                                        whileHover={{ scale: 1.1 }}
-                                        whileTap={{ scale: 0.9 }}
-                                        className="px-12 py-4 bg-transparent border border-pink-200 text-pink-200 rounded-full handwritten text-3xl hover:bg-pink-200 hover:text-red-950 transition-all shadow-[0_0_20px_rgba(251,207,232,0.3)]"
+                                    Yes
+                                </button>
+                            </motion.div>
+                        )}
+
+                        {/* ACT 4: THE FINALE */}
+                        {view === 'finale' && (
+                            <motion.div 
+                                key="finale" 
+                                initial={{ opacity: 0 }} 
+                                animate={{ opacity: 1 }} 
+                                className="absolute inset-0 flex flex-col items-center justify-center text-center p-10 overflow-hidden"
+                            >
+                                {/* Background Image: 11.jpeg */}
+                                <div 
+                                    className="absolute inset-0 bg-cover bg-center z-0 scale-105" 
+                                    style={{ backgroundImage: `url('11.jpeg')` }} 
+                                />
+                                
+                                <div className="absolute inset-0 bg-black/50 z-10" />
+
+                                <div className="relative z-20">
+                                    <motion.h1 
+                                        initial={{ scale: 0.5, y: 20 }} 
+                                        animate={{ scale: 1, y: 0 }} 
+                                        className="text-7xl md:text-9xl font-black italic text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.4)]"
                                     >
-                                        Will you be my Valentine?
-                                    </motion.button>
-                                </motion.div>
+                                        YES! ❤️
+                                    </motion.h1>
+                                    <motion.p 
+                                        initial={{ opacity: 0 }} 
+                                        animate={{ opacity: 1 }} 
+                                        transition={{ delay: 0.5 }} 
+                                        className="text-xl md:text-2xl mt-8 font-light tracking-[0.4em] uppercase text-white drop-shadow-md"
+                                    >
+                                        Always Be My Baby... Indefinitely.
+                                    </motion.p>
+                                </div>
+
+                                {/* Infinite Rain of Hearts */}
+                                <div className="absolute inset-0 pointer-events-none z-30">
+                                    {[...Array(30)].map((_, i) => (
+                                        <motion.div 
+                                            key={i} 
+                                            animate={{ y: ['-10vh', '110vh'] }} 
+                                            transition={{ repeat: Infinity, duration: 2 + Math.random()*2, delay: i*0.1 }}
+                                            className="absolute text-3xl" 
+                                            style={{ left: Math.random()*100+'vw' }}
+                                        >
+                                            ❤️
+                                        </motion.div>
+                                    ))}
+                                </div>
                             </motion.div>
                         )}
                     </AnimatePresence>
