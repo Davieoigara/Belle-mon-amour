@@ -20,7 +20,7 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
         @media (max-width: 640px) {
-            .collage-photo { width: 100px; height: 130px; border-width: 3px; }
+            .collage-photo { width: 110px; height: 140px; border-width: 3px; }
         }
     </style>
 </head>
@@ -29,7 +29,7 @@
 
     <script type="text/babel">
         const { useState, useRef, useEffect } = React;
-        const { motion } = window.Motion;
+        const { motion, AnimatePresence } = window.Motion;
 
         function ValentinePage() {
             const [answered, setAnswered] = useState(false);
@@ -37,7 +37,6 @@
             const [yesScale, setYesScale] = useState(1);
             const audioRef = useRef(null);
 
-            // Every filename in your repository
             const photos = [
                 '1.jpeg', '2.jpeg', '3.jpeg', '4.jpeg', '5.jpeg', 
                 '6.jpeg', '7.jpeg', '8.jpeg', '9.jpeg', '10.jpeg', 
@@ -45,6 +44,7 @@
                 '16.jpeg', 'belle.jpg.jpeg'
             ];
 
+            // Start music on first interaction
             const startMusic = () => {
                 if (audioRef.current && audioRef.current.paused) {
                     audioRef.current.play().catch(() => {});
@@ -53,8 +53,8 @@
 
             const moveNoButton = () => {
                 startMusic();
-                const randomX = Math.floor(Math.random() * 200 - 100);
-                const randomY = Math.floor(Math.random() * 200 - 100);
+                const randomX = Math.floor(Math.random() * 260 - 130);
+                const randomY = Math.floor(Math.random() * 260 - 130);
                 setNoPosition({ x: randomX, y: randomY });
                 setYesScale(prev => prev + 0.3); 
             };
@@ -65,30 +65,29 @@
             };
 
             return (
-                <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-gray-900">
+                <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-gray-950">
                     
-                    {/* Floating Collage Background */}
+                    {/* Floating Collage Background - Changes every 3 seconds */}
                     <div className="absolute inset-0 z-0">
                         {photos.map((photo, i) => (
                             <motion.div
                                 key={i}
-                                initial={{ opacity: 0, scale: 0.5 }}
+                                initial={{ opacity: 0 }}
                                 animate={{ 
                                     opacity: 0.5, 
-                                    scale: 1,
-                                    y: [0, Math.random() * 30 - 15, 0],
-                                    rotate: [Math.random() * 10 - 5, Math.random() * -10 + 5] 
+                                    y: [0, Math.random() * 40 - 20, 0],
+                                    rotate: [Math.random() * 12 - 6, Math.random() * -12 + 6] 
                                 }}
                                 transition={{ 
-                                    duration: 6, 
+                                    duration: 3, // Now 3 seconds
                                     repeat: Infinity, 
-                                    delay: i * 0.1 
+                                    delay: i * 0.15 
                                 }}
                                 className="absolute collage-photo"
                                 style={{
                                     backgroundImage: `url('${photo}')`,
-                                    left: `${(i % 5) * 20 + (Math.random() * 10 - 5)}%`,
-                                    top: `${Math.floor(i / 5) * 25 + (Math.random() * 10 - 5)}%`,
+                                    left: `${(i % 5) * 20 + (Math.random() * 8 - 4)}%`,
+                                    top: `${Math.floor(i / 5) * 22 + (Math.random() * 8 - 4)}%`,
                                 }}
                             />
                         ))}
@@ -98,19 +97,19 @@
                         <source src="Alwaysbemybaby.mp3" type="audio/mpeg" />
                     </audio>
 
-                    {/* Overlay */}
+                    {/* Dark overlay */}
                     <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] z-1" />
 
                     {/* Celebration Hearts */}
                     {answered && (
                         <div className="fixed inset-0 pointer-events-none z-30">
-                            {[...Array(30)].map((_, i) => (
+                            {[...Array(40)].map((_, i) => (
                                 <motion.span 
                                     key={i} 
                                     initial={{ y: -50, x: `${Math.random() * 100}vw`, opacity: 0 }} 
                                     animate={{ y: '110vh', opacity: [0, 1, 1, 0], rotate: 360 }} 
-                                    transition={{ repeat: Infinity, duration: Math.random() * 3 + 2, delay: Math.random() * 2 }}
-                                    className="absolute text-red-500 text-3xl"
+                                    transition={{ repeat: Infinity, duration: Math.random() * 4 + 2, delay: Math.random() * 2 }}
+                                    className="absolute text-red-500 text-4xl"
                                 >
                                     ❤️
                                 </motion.span>
@@ -118,11 +117,17 @@
                         </div>
                     )}
 
-                    {/* Glass Content Box */}
-                    <div className="relative z-20 w-full max-w-xl bg-white/70 backdrop-blur-lg p-8 md:p-12 rounded-3xl shadow-2xl text-center border border-white/40">
-                        {!answered ? (
-                            <>
-                                <motion.h1 initial={{ y: -20 }} animate={{ y: 0 }} className="text-4xl md:text-5xl font-extrabold text-red-600 drop-shadow-sm">
+                    {/* Main Interaction Card */}
+                    <AnimatePresence>
+                        {!answered && (
+                            <motion.div 
+                                key="question-box"
+                                initial={{ opacity: 1 }}
+                                exit={{ opacity: 0, scale: 0.8, filter: "blur(10px)" }}
+                                transition={{ duration: 1 }}
+                                className="relative z-20 w-full max-w-xl bg-white/70 backdrop-blur-lg p-8 md:p-12 rounded-3xl shadow-2xl text-center border border-white/40"
+                            >
+                                <motion.h1 className="text-4xl md:text-5xl font-extrabold text-red-600 drop-shadow-sm">
                                     Belle ❤️
                                 </motion.h1>
                                 <p className="text-lg md:text-xl mt-4 text-gray-800 italic font-semibold">"Always be my baby..."</p>
@@ -144,18 +149,26 @@
                                         No
                                     </motion.button>
                                 </div>
-                            </>
-                        ) : (
-                            <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }} className="py-10">
-                                <h2 className="text-5xl md:text-6xl font-black text-red-600 drop-shadow-lg mb-6">
-                                    YES! ❤️
-                                </h2>
-                                <p className="text-2xl text-gray-900 font-bold italic">
-                                    "I'm part of you indefinitely..."
-                                </p>
                             </motion.div>
                         )}
-                    </div>
+                    </AnimatePresence>
+
+                    {/* Final Celebration Text (Over the collage) */}
+                    {answered && (
+                        <motion.div 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 1, duration: 1 }}
+                            className="relative z-40 text-center"
+                        >
+                            <h2 className="text-6xl md:text-8xl font-black text-white drop-shadow-[0_5px_15px_rgba(220,38,38,0.8)]">
+                                YES! ❤️
+                            </h2>
+                            <p className="text-2xl md:text-3xl text-white mt-4 font-bold italic drop-shadow-md">
+                                Always Be My Baby...
+                            </p>
+                        </motion.div>
+                    )}
                 </div>
             );
         }
