@@ -44,7 +44,6 @@
                 '16.jpeg', 'belle.jpg.jpeg'
             ];
 
-            // Start music on first interaction
             const startMusic = () => {
                 if (audioRef.current && audioRef.current.paused) {
                     audioRef.current.play().catch(() => {});
@@ -67,7 +66,7 @@
             return (
                 <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-gray-950">
                     
-                    {/* Floating Collage Background - Changes every 3 seconds */}
+                    {/* Floating Collage Background */}
                     <div className="absolute inset-0 z-0">
                         {photos.map((photo, i) => (
                             <motion.div
@@ -79,7 +78,7 @@
                                     rotate: [Math.random() * 12 - 6, Math.random() * -12 + 6] 
                                 }}
                                 transition={{ 
-                                    duration: 3, // Now 3 seconds
+                                    duration: 3, 
                                     repeat: Infinity, 
                                     delay: i * 0.15 
                                 }}
@@ -97,7 +96,6 @@
                         <source src="Alwaysbemybaby.mp3" type="audio/mpeg" />
                     </audio>
 
-                    {/* Dark overlay */}
                     <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] z-1" />
 
                     {/* Celebration Hearts */}
@@ -117,14 +115,14 @@
                         </div>
                     )}
 
-                    {/* Main Interaction Card */}
+                    {/* This card will now EXIT (disappear) completely */}
                     <AnimatePresence>
                         {!answered && (
                             <motion.div 
                                 key="question-box"
-                                initial={{ opacity: 1 }}
-                                exit={{ opacity: 0, scale: 0.8, filter: "blur(10px)" }}
-                                transition={{ duration: 1 }}
+                                initial={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.5, filter: "blur(20px)" }}
+                                transition={{ duration: 0.8 }}
                                 className="relative z-20 w-full max-w-xl bg-white/70 backdrop-blur-lg p-8 md:p-12 rounded-3xl shadow-2xl text-center border border-white/40"
                             >
                                 <motion.h1 className="text-4xl md:text-5xl font-extrabold text-red-600 drop-shadow-sm">
@@ -153,22 +151,24 @@
                         )}
                     </AnimatePresence>
 
-                    {/* Final Celebration Text (Over the collage) */}
-                    {answered && (
-                        <motion.div 
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 1, duration: 1 }}
-                            className="relative z-40 text-center"
-                        >
-                            <h2 className="text-6xl md:text-8xl font-black text-white drop-shadow-[0_5px_15px_rgba(220,38,38,0.8)]">
-                                YES! ❤️
-                            </h2>
-                            <p className="text-2xl md:text-3xl text-white mt-4 font-bold italic drop-shadow-md">
-                                Always Be My Baby...
-                            </p>
-                        </motion.div>
-                    )}
+                    {/* Final Celebration Text - Now independent of the white box */}
+                    <AnimatePresence>
+                        {answered && (
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: 0.5, duration: 1, type: "spring" }}
+                                className="relative z-40 text-center pointer-events-none"
+                            >
+                                <h2 className="text-7xl md:text-9xl font-black text-white drop-shadow-[0_0_30px_rgba(220,38,38,1)]">
+                                    YES! ❤️
+                                </h2>
+                                <p className="text-2xl md:text-4xl text-white mt-6 font-bold italic drop-shadow-lg">
+                                    "I'm part of you indefinitely..."
+                                </p>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             );
         }
